@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="AmrTube — modern creator video platform">
+<meta name="theme-color" content="#7c5cff">
+<title>AmrTube</title>
+<style>
+:root{
+  --bg:#080b10;--surface:#10151c;--surface2:#161c24;--surface3:#202833;
+  --text:#f7f9fc;--muted:#9ba7b5;--line:#28313d;--accent:#7c5cff;--accent2:#a98fff;
+  --good:#22c55e;--warn:#f59e0b;--bad:#ef4444;--info:#38bdf8;
+  --shadow:0 24px 70px rgba(0,0,0,.38)
+}
+:root.light{
+  --bg:#f5f7fb;--surface:#fff;--surface2:#eef1f6;--surface3:#e2e7ef;
+  --text:#131923;--muted:#667180;--line:#d8dee8;--shadow:0 22px 60px rgba(30,39,55,.12)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+img{max-width:100%}
+.hidden{display:none!important}
+.app{min-height:100vh}
+.topbar{
+  height:68px;display:flex;align-items:center;gap:14px;padding:0 14px;position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--bg) 91%,transparent);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;min-width:185px}
+.logo{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-size:21px;font-weight:950;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 9px 26px rgba(124,92,255,.25)}
+.brand-name{font-size:20px;letter-spacing:-.4px}.brand-name span{color:var(--accent2)}
+.menu-btn{display:none}
+.search-wrap{flex:1;max-width:780px;margin:auto;position:relative}
+.search{height:44px;border:1px solid var(--line);display:flex;border-radius:999px;background:var(--surface);overflow:hidden}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.16)}
+.search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);padding:0 16px}
+.search button{width:54px;border:0;border-left:1px solid var(--line);background:var(--surface2);color:var(--text)}
+.suggestions{position:absolute;left:0;right:0;top:52px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:7px;box-shadow:var(--shadow);display:none;z-index:80}
+.suggestion{padding:10px 12px;border-radius:10px}.suggestion:hover{background:var(--surface2)}
+.top-actions{display:flex;align-items:center;gap:8px}.icon-btn,.pill,.btn,.action,.select{
+  border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px
+}
+.icon-btn{width:40px;height:40px;display:grid;place-items:center}.pill{border-radius:999px;padding:10px 14px}.pill.primary,.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.layout{display:grid;grid-template-columns:238px minmax(0,1fr)}
+.sidebar{position:sticky;top:68px;height:calc(100vh - 68px);overflow:auto;border-right:1px solid var(--line);padding:14px 11px}
+.side-label{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--muted);padding:11px 12px 7px;text-transform:uppercase}
+.nav{display:flex;gap:12px;align-items:center;padding:11px 12px;border-radius:12px;margin:2px 0}.nav:hover,.nav.active{background:var(--surface2)}
+.nav-icon{width:22px;text-align:center}.sidebar.collapsed{width:82px}.sidebar.collapsed .nav-text,.sidebar.collapsed .side-label{display:none}.sidebar.collapsed .nav{justify-content:center}
+.main{min-width:0;padding:20px 22px 44px}
+.page{display:none}.page.active{display:block}
+.chips{display:flex;gap:8px;overflow:auto;padding-bottom:14px;scrollbar-width:none}.chip{padding:9px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);white-space:nowrap}.chip.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:24px;min-height:290px;background:radial-gradient(circle at 80% 15%,rgba(169,143,255,.23),transparent 28%),linear-gradient(135deg,#17132a,#10141a)}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;min-height:290px}.hero-copy{padding:36px;display:flex;justify-content:center;flex-direction:column}.eyebrow{text-transform:uppercase;color:var(--accent2);letter-spacing:.13em;font-size:11px;font-weight:900}.hero h1{font-size:clamp(31px,4.8vw,55px);line-height:1;letter-spacing:-1.7px;margin:11px 0 13px}.hero p{max-width:700px;color:#d0d8e2;line-height:1.6}.hero-art{display:grid;place-items:center;padding:25px}.art-card{width:min(300px,90%);aspect-ratio:4/5;border-radius:26px;background:linear-gradient(160deg,rgba(124,92,255,.42),rgba(17,21,27,.3));border:1px solid rgba(255,255,255,.12);box-shadow:0 28px 70px rgba(0,0,0,.25);display:grid;place-items:center;transform:rotate(4deg)}.art-card>div{transform:rotate(-4deg);text-align:center}.art-card h2{font-size:30px;margin:14px 0 6px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:23px 0 12px}.section-head h2{margin:0;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:19px 16px}.card{min-width:0}.thumb{aspect-ratio:16/9;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:var(--surface2);cursor:pointer}.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}.card:hover .thumb img{transform:scale(1.04)}.duration{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.82);padding:4px 6px;border-radius:6px;font-size:11px}.play{position:absolute;inset:0;display:grid;place-items:center;opacity:0;background:rgba(0,0,0,.18);transition:.2s}.card:hover .play{opacity:1}.play>span{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#111;font-size:19px}.card-body{display:flex;gap:10px;padding-top:10px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface3);font-weight:900;flex:0 0 auto}.card h3{font-size:15px;margin:0 0 4px;line-height:1.35}.meta,.muted{color:var(--muted)}.meta{font-size:12.5px;line-height:1.5}.card-tools{margin-left:auto;display:flex;gap:3px}.mini{width:29px;height:29px;border:0;background:transparent;color:var(--muted);border-radius:8px}.mini:hover{background:var(--surface2);color:var(--text)}
+.empty{grid-column:1/-1;border:1px dashed var(--line);padding:44px 20px;text-align:center;color:var(--muted);border-radius:14px}
+.select{padding:9px 11px}.watch-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(310px,.5fr);gap:18px}.player{background:#000;border-radius:17px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}.player video{display:block;width:100%;aspect-ratio:16/9}.video-title{font-size:25px;line-height:1.2;margin:16px 0 7px}.channel-row{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}.subscribe{margin-left:auto;border:0;border-radius:999px;padding:10px 15px;background:var(--text);color:var(--bg);font-weight:800}.video-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.action{border-radius:999px;padding:9px 13px}.action.active{background:var(--accent);border-color:var(--accent);color:#fff}.description{background:var(--surface);border:1px solid var(--line);padding:15px;border-radius:14px;white-space:pre-wrap;line-height:1.6}.queue{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:12px}.queue h3{margin:0 0 11px}.queue-item{display:grid;grid-template-columns:118px 1fr;gap:10px;padding:8px 0;cursor:pointer}.queue-thumb{aspect-ratio:16/9;border-radius:9px;overflow:hidden}.queue-thumb img{width:100%;height:100%;object-fit:cover}.queue-item h4{font-size:13px;line-height:1.35;margin:0 0 4px}.queue-item small{color:var(--muted)}
+.profile{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:17px;background:var(--surface);border:1px solid var(--line);border-radius:17px}.profile-big{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;font-size:26px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:40px 0 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:15px;z-index:100}.modal.open{display:flex}.modal-box{width:min(1120px,100%);max-height:93vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}.modal-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.close{border:0;background:transparent;color:var(--text);font-size:28px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:17px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted);font-weight:750}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:10px 11px;outline:none}.field textarea{min-height:105px;resize:vertical}.form-actions{display:flex;justify-content:flex-end;gap:8px;padding:0 17px 17px}.btn{padding:10px 13px}.btn.danger{background:#321219;border-color:#6a252e;color:#fecaca}
+.admin-nav{display:flex;gap:7px;overflow:auto;padding:13px 17px;border-bottom:1px solid var(--line)}.admin-tab{border:1px solid var(--line);background:var(--surface2);color:var(--text);padding:8px 11px;border-radius:999px;white-space:nowrap}.admin-tab.active{background:var(--accent);border-color:var(--accent);color:white}
+.admin-section{display:none}.admin-section.active{display:block}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:15px 17px}.stat{padding:15px;background:var(--bg);border:1px solid var(--line);border-radius:13px}.stat strong{display:block;font-size:23px}.stat span{display:block;color:var(--muted);font-size:11px;margin-top:4px}.delta{font-size:11px;color:var(--good);margin-top:5px}
+.panel{margin:0 17px 15px;border:1px solid var(--line);background:var(--bg);border-radius:14px;overflow:hidden}.panel-head{padding:13px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:12px}.table th{color:var(--muted);font-weight:700}.badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:800}.badge.good{background:rgba(34,197,94,.13);color:#86efac}.badge.warn{background:rgba(245,158,11,.13);color:#fcd34d}.badge.bad{background:rgba(239,68,68,.13);color:#fca5a5}
+.chart{padding:14px;height:220px}.chart svg{width:100%;height:100%;display:block}.bar-row{display:grid;grid-template-columns:85px 1fr 55px;align-items:center;gap:8px;padding:7px 14px}.bar{height:8px;border-radius:99px;background:var(--surface3);overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px}
+.security-box{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px}.security-item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px}.security-item h4{margin:0 0 5px}.security-item p{margin:0;color:var(--muted);font-size:12px}.switch{display:flex;justify-content:space-between;align-items:center;gap:12px}.toggle{width:44px;height:24px;border-radius:999px;background:var(--surface3);padding:2px;border:0}.toggle i{display:block;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}.toggle.on{background:var(--accent)}.toggle.on i{transform:translateX(20px)}
+.login-wrap{padding:25px;display:grid;grid-template-columns:1fr 1fr;gap:18px}.login-card{background:var(--bg);border:1px solid var(--line);padding:18px;border-radius:15px}.login-card h2{margin-top:0}.notice{padding:11px 12px;border-radius:10px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#fcd34d;font-size:12px;line-height:1.55}
+.toast{position:fixed;right:17px;bottom:17px;z-index:250;background:var(--text);color:var(--bg);padding:11px 14px;border-radius:11px;box-shadow:var(--shadow);display:none;font-size:12px}.toast.show{display:block}
+@media(max-width:1180px){.grid{grid-template-columns:repeat(3,1fr)}.watch-layout{grid-template-columns:1fr}.queue{margin-top:15px}.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:920px){.sidebar{display:none}.menu-btn{display:grid}.layout{grid-template-columns:1fr}.brand{min-width:auto}.brand-name{display:none}.grid{grid-template-columns:repeat(2,1fr)}.hero-grid{grid-template-columns:1fr}.hero-art{display:none}}
+@media(max-width:650px){.main{padding:14px 11px 35px}.grid{grid-template-columns:1fr}.form-grid,.login-wrap,.security-box{grid-template-columns:1fr}.field.full{grid-column:auto}.stats{grid-template-columns:1fr 1fr}.profile{grid-template-columns:auto 1fr}.profile .pill{grid-column:1/-1;width:100%}.hide-mobile{display:none}.search-wrap{max-width:none}.queue-item{grid-template-columns:100px 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+<button class="icon-btn menu-btn" onclick="toggleSidebar()">☰</button>
+<a class="brand" href="#home" onclick="showPage('home')"><span class="logo">A</span><span class="brand-name">Amr<span>Tube</span></span></a>
+<div class="search-wrap">
+<div class="search"><input id="search" placeholder="Search videos, channels, topics…" autocomplete="off"><button onclick="runSearch()">⌕</button></div>
+<div class="suggestions" id="suggestions"></div>
+</div>
+<div class="top-actions">
+<button class="icon-btn hide-mobile" id="themeBtn" onclick="toggleTheme()">☾</button>
+<button class="pill hide-mobile" onclick="openUpload()">＋ Upload</button>
+<button class="icon-btn" onclick="openAdmin()">⚙</button>
+</div>
+</header>
+
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+<div class="side-label">Main</div>
+<a class="nav active" data-page="home" onclick="showPage('home')"><span class="nav-icon">⌂</span><span class="nav-text">Home</span></a>
+<a class="nav" data-page="trending" onclick="showPage('trending')"><span class="nav-icon">🔥</span><span class="nav-text">Trending</span></a>
+<a class="nav" data-page="subscriptions" onclick="showPage('subscriptions')"><span class="nav-icon">★</span><span class="nav-text">Subscriptions</span></a>
+<div class="side-label">Library</div>
+<a class="nav" data-page="history" onclick="showPage('history')"><span class="nav-icon">◷</span><span class="nav-text">History</span></a>
+<a class="nav" data-page="liked" onclick="showPage('liked')"><span class="nav-icon">♡</span><span class="nav-text">Liked</span></a>
+<a class="nav" data-page="watchlater" onclick="showPage('watchlater')"><span class="nav-icon">▣</span><span class="nav-text">Watch later</span></a>
+<div class="side-label">Topics</div>
+<a class="nav" onclick="setCategory('Music')"><span class="nav-icon">♫</span><span class="nav-text">Music</span></a>
+<a class="nav" onclick="setCategory('Gaming')"><span class="nav-icon">🎮</span><span class="nav-text">Gaming</span></a>
+<a class="nav" onclick="setCategory('Tech')"><span class="nav-icon">⌘</span><span class="nav-text">Tech</span></a>
+<a class="nav" onclick="setCategory('Education')"><span class="nav-icon">🎓</span><span class="nav-text">Education</span></a>
+<div class="side-label">Creator</div>
+<a class="nav" onclick="openUpload()"><span class="nav-icon">＋</span><span class="nav-text">Upload</span></a>
+<a class="nav" onclick="openAdmin()"><span class="nav-icon">⚙</span><span class="nav-text">Admin Studio</span></a>
+</aside>
+
+<main class="main">
+<section id="page-home" class="page active">
+<div class="chips" id="chips">
+<button class="chip active" onclick="setCategory('All')">All</button><button class="chip" onclick="setCategory('Trending')">Trending</button><button class="chip" onclick="setCategory('Music')">Music</button><button class="chip" onclick="setCategory('Gaming')">Gaming</button><button class="chip" onclick="setCategory('Tech')">Tech</button><button class="chip" onclick="setCategory('Education')">Education</button><button class="chip" onclick="setCategory('News')">News</button><button class="chip" onclick="setCategory('Sports')">Sports</button>
+</div>
+<section class="hero"><div class="hero-grid"><div class="hero-copy"><div class="eyebrow">AmrTube Creator Platform</div><h1>Build your own video community.</h1><p id="heroText">A polished video experience with creator tools, analytics, search, and an upgraded admin studio.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="pill primary" onclick="openUpload()">＋ Upload video</button><button class="pill" onclick="showPage('trending')">Explore trending</button></div></div><div class="hero-art"><div class="art-card"><div><div class="logo" style="margin:auto">A</div><h2>AmrTube</h2><div class="muted">Your platform.</div></div></div></div></div></section>
+<div class="section-head"><h2 id="homeTitle">Recommended</h2><select class="select" id="sort" onchange="renderHome()"><option value="recommended">Recommended</option><option value="views">Most viewed</option><option value="newest">Newest</option><option value="title">Title A–Z</option></select></div>
+<div class="grid" id="homeGrid"></div>
+</section>
+
+<section id="page-trending" class="page"><div class="section-head"><h2>Trending</h2><span class="muted">Based on recorded views</span></div><div class="grid" id="trendingGrid"></div></section>
+<section id="page-subscriptions" class="page"><div class="section-head"><h2>Subscriptions</h2><span class="muted">Channels you follow</span></div><div class="grid" id="subsGrid"></div></section>
+<section id="page-history" class="page"><div class="section-head"><h2>History</h2><button class="btn" onclick="clearHistory()">Clear history</button></div><div class="grid" id="historyGrid"></div></section>
+<section id="page-liked" class="page"><div class="section-head"><h2>Liked videos</h2></div><div class="grid" id="likedGrid"></div></section>
+<section id="page-watchlater" class="page"><div class="section-head"><h2>Watch later</h2></div><div class="grid" id="laterGrid"></div></section>
+
+<section id="page-watch" class="page">
+<div class="watch-layout">
+<div>
+<div class="player"><video id="watchPlayer" controls playsinline></video></div>
+<h1 id="watchTitle" class="video-title"></h1><div id="watchMeta" class="meta"></div>
+<div class="channel-row"><div class="avatar" id="watchAvatar">A</div><div><strong id="watchChannel"></strong><div id="watchSubs" class="meta"></div></div><button class="subscribe" id="subscribeBtn" onclick="toggleSubscribe()">Subscribe</button></div>
+<div class="video-actions"><button id="likeBtn" class="action" onclick="toggleLike()">♡ Like</button><button id="laterBtn" class="action" onclick="toggleLater()">＋ Watch later</button><button class="action" onclick="shareVideo()">↗ Share</button><button class="action" onclick="queueVideo(currentVideoId)">☷ Queue</button></div>
+<div id="watchDesc" class="description"></div>
+</div>
+<aside class="queue"><h3>Up next</h3><div id="queueList"></div></aside>
+</div>
+</section>
+<footer>© <span id="year"></span> AmrTube · Dynamic browser-based prototype</footer>
+</main>
+</div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal" id="uploadModal" onclick="backdrop(event,'uploadModal')">
+<div class="modal-box"><div class="modal-head"><strong>Upload video</strong><button class="close" onclick="closeModal('uploadModal')">×</button></div>
+<form id="uploadForm"><div class="form-grid">
+<div class="field"><label>Title</label><input id="uTitle" required></div><div class="field"><label>Channel</label><input id="uChannel" value="Amr Creator" required></div>
+<div class="field"><label>Category</label><select id="uCategory"><option>Entertainment</option><option>Music</option><option>Gaming</option><option>Tech</option><option>Education</option><option>News</option><option>Sports</option></select></div>
+<div class="field"><label>Video URL</label><input id="uUrl" placeholder="https://…/video.mp4"></div>
+<div class="field full"><label>Or select a local file</label><input id="uFile" type="file" accept="video/*"></div>
+<div class="field full"><label>Thumbnail URL</label><input id="uThumb" placeholder="https://…/thumbnail.jpg"></div>
+<div class="field full"><label>Description</label><textarea id="uDesc"></textarea></div>
+</div><div class="form-actions"><button type="button" class="btn" onclick="closeModal('uploadModal')">Cancel</button><button class="btn primary">Publish</button></div></form>
+</div></div>
+
+<!-- Admin -->
+<div class="modal" id="adminModal">
+<div class="modal-box">
+<div class="modal-head"><strong>AmrTube Admin Studio</strong><button class="close" onclick="closeModal('adminModal')">×</button></div>
+
+<div id="adminGate"></div>
+
+<div id="adminApp" class="hidden">
+<div class="admin-nav">
+<button class="admin-tab active" data-tab="overview" onclick="adminTab('overview')">Overview</button>
+<button class="admin-tab" data-tab="content" onclick="adminTab('content')">Content</button>
+<button class="admin-tab" data-tab="analytics" onclick="adminTab('analytics')">Analytics</button>
+<button class="admin-tab" data-tab="security" onclick="adminTab('security')">Security</button>
+<button class="admin-tab" data-tab="settings" onclick="adminTab('settings')">Settings</button>
+<button class="admin-tab" data-tab="backup" onclick="adminTab('backup')">Backup</button>
+</div>
+
+<section id="admin-overview" class="admin-section active">
+<div class="stats">
+<div class="stat"><strong id="sVideos">0</strong><span>Videos</span><div class="delta">Live catalog</div></div>
+<div class="stat"><strong id="sViews">0</strong><span>Total views</span><div class="delta">Recorded locally</div></div>
+<div class="stat"><strong id="sLikes">0</strong><span>Likes</span><div class="delta">User actions</div></div>
+<div class="stat"><strong id="sChannels">0</strong><span>Channels</span><div class="delta">Unique channels</div></div>
+<div class="stat"><strong id="sEvents">0</strong><span>Audit events</span><div class="delta">Admin security</div></div>
+</div>
+<div class="panel"><div class="panel-head"><strong>Traffic summary</strong><span class="muted">Recorded in this browser</span></div><div id="overviewBars"></div></div>
+<div class="panel"><div class="panel-head"><strong>Recent activity</strong><button class="btn" onclick="adminTab('security')">View audit log</button></div><div id="recentActivity"></div></div>
+</section>
+
+<section id="admin-content" class="admin-section">
+<div class="panel"><div class="panel-head"><strong>Video catalog</strong><button class="btn primary" onclick="openUpload()">＋ Add video</button></div><div id="contentTable"></div></div>
+</section>
+
+<section id="admin-analytics" class="admin-section">
+<div class="stats"><div class="stat"><strong id="aAvgViews">0</strong><span>Avg views/video</span></div><div class="stat"><strong id="aTopVideo">—</strong><span>Top video</span></div><div class="stat"><strong id="aTopChannel">—</strong><span>Top channel</span></div><div class="stat"><strong id="aEngagement">0%</strong><span>Engagement rate</span></div><div class="stat"><strong id="aHistory">0</strong><span>Watch sessions</span></div></div>
+<div class="panel"><div class="panel-head"><strong>Views by category</strong></div><div id="categoryBars"></div></div>
+<div class="panel"><div class="panel-head"><strong>Actual event timeline</strong><span class="muted">Daily local events</span></div><div class="chart" id="eventChart"></div></div>
+</section>
+
+<section id="admin-security" class="admin-section">
+<div class="panel"><div class="panel-head"><strong>Security center</strong><span id="securityStatus" class="badge good">Protected</span></div>
+<div class="security-box">
+<div class="security-item"><div class="switch"><div><h4>Session timeout</h4><p>Automatically locks the admin panel after inactivity.</p></div><button id="timeoutToggle" class="toggle on" onclick="toggleSecurity('sessionTimeout')"><i></i></button></div></div>
+<div class="security-item"><div class="switch"><div><h4>Login lockout</h4><p>Locks login temporarily after repeated failures.</p></div><button id="lockoutToggle" class="toggle on" onclick="toggleSecurity('lockout')"><i></i></button></div></div>
+<div class="security-item"><h4>Change admin password</h4><p style="margin-bottom:9px">Uses PBKDF2 password hashing and a random salt in the browser.</p><button class="btn" onclick="changePassword()">Change password</button></div>
+<div class="security-item"><h4>End current session</h4><p style="margin-bottom:9px">Immediately log out of Admin Studio.</p><button class="btn danger" onclick="logoutAdmin()">Log out</button></div>
+</div></div>
+<div class="panel"><div class="panel-head"><strong>Audit log</strong><button class="btn" onclick="clearAudit()">Clear log</button></div><div id="auditTable"></div></div>
+</section>
+
+<section id="admin-settings" class="admin-section">
+<div class="form-grid">
+<div class="field"><label>Site name</label><input id="setName"></div><div class="field"><label>Accent color</label><input id="setAccent" type="color"></div>
+<div class="field full"><label>Homepage message</label><textarea id="setHero"></textarea></div>
+</div>
+<div class="form-actions"><button class="btn primary" onclick="saveSettings()">Save site settings</button></div>
+</section>
+
+<section id="admin-backup" class="admin-section">
+<div class="panel"><div class="panel-head"><strong>Data protection</strong><span class="muted">Export/import local AmrTube data</span></div>
+<div style="padding:15px;display:flex;flex-wrap:wrap;gap:8px"><button class="btn primary" onclick="exportBackup()">Export encrypted-style JSON package</button><button class="btn" onclick="document.getElementById('importFile').click()">Import backup</button><input id="importFile" type="file" accept=".json" style="display:none"></div>
+<div style="padding:0 15px 15px" class="notice">This backup contains local application data. Store it privately. It is not a replacement for server-side backups.</div>
+</div>
+<div class="panel"><div class="panel-head"><strong>Danger zone</strong></div><div style="padding:15px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn danger" onclick="factoryReset()">Factory reset local AmrTube</button><button class="btn" onclick="clearAudit()">Clear audit log</button></div></div>
+</section>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEMO_VIDEOS=[
+{id:"v1",title:"How I Built My First Web App",channel:"Amr Creator",category:"Tech",views:128400,age:"2 days ago",duration:"12:48",thumb:"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",url:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",desc:"A practical look at building a polished web experience from scratch.",subs:"42.8K"},
+{id:"v2",title:"Late Night Coding Session",channel:"Amr Labs",category:"Gaming",views:87200,age:"5 days ago",duration:"18:22",thumb:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",url:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",desc:"A relaxed creator session with a dark neon aesthetic.",subs:"18.4K"},
+{id:"v3",title:"Study With Me · 50 Minute Focus",channel:"Amr Study",category:"Education",views:231900,age:"1 week ago",duration:"50:01",thumb:"https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=1200&q=80",url:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",desc:"A quiet focus session designed for studying and deep work.",subs:"31.6K"},
+{id:"v4",title:"City Lights & Chill Beats",channel:"Amr Music",category:"Music",views:514600,age:"2 weeks ago",duration:"32:10",thumb:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80",url:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",desc:"A music-channel style placeholder for your future catalog.",subs:"76.1K"},
+{id:"v5",title:"Camera Gear Guide 2026",channel:"Amr Tech",category:"Tech",views:64000,age:"3 weeks ago",duration:"09:17",thumb:"https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",url:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",desc:"A sample creator-tech review.",subs:"12.5K"},
+{id:"v6",title:"Weekend Match Highlights",channel:"Amr Sports",category:"Sports",views:191300,age:"1 month ago",duration:"07:45",thumb:"https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80",url:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",desc:"A sample sports highlight card.",subs:"23.9K"},
+{id:"v7",title:"How Computers Actually Work",channel:"Amr Academy",category:"Education",views:95000,age:"1 month ago",duration:"14:20",thumb:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",url:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",desc:"An approachable explanation of computer fundamentals.",subs:"15.2K"},
+{id:"v8",title:"The Future of AI Tools",channel:"Amr Future",category:"Tech",views:321700,age:"2 months ago",duration:"21:03",thumb:"https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80",url:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",desc:"A placeholder for future AI and technology content.",subs:"52.3K"}
+];
+const read=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+let videos=read("amr_videos",DEMO_VIDEOS.map(v=>({...v})));
+let settings=read("amr_settings",{siteName:"AmrTube",accent:"#7c5cff",hero:"A polished video platform with creator tools and analytics."});
+let state=read("amr_state",{likes:[],later:[],history:[],subs:[],events:[],audit:[]});
+let security=read("amr_security",{configured:false,passHash:null,salt:null,sessionTimeout:true,lockout:true,failed:0,lockedUntil:0});
+let session=read("amr_session",{active:false,expiresAt:0});
+let activeCategory="All",searchQuery="",currentVideoId=null,fileUrl=null,sessionTimer=null;
+
+function save(){localStorage.setItem("amr_videos",JSON.stringify(videos));localStorage.setItem("amr_settings",JSON.stringify(settings));localStorage.setItem("amr_state",JSON.stringify(state));localStorage.setItem("amr_security",JSON.stringify(security));localStorage.setItem("amr_session",JSON.stringify(session))}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function fmt(n){n=Number(n)||0;if(n>=1000000)return(n/1e6).toFixed(1).replace(".0","")+"M";if(n>=1000)return(n/1e3).toFixed(1).replace(".0","")+"K";return String(n)}
+function initials(s){return String(s||"A").trim().slice(0,1).toUpperCase()}
+function getVideo(id){return videos.find(v=>String(v.id)===String(id))}
+function logEvent(type,detail=""){state.events.push({ts:Date.now(),type,detail});if(state.events.length>500)state.events=state.events.slice(-500)}
+function audit(action,detail=""){state.audit.push({ts:Date.now(),action,detail});if(state.audit.length>500)state.audit=state.audit.slice(-500);logEvent(action,detail);save()}
+function thumb(){return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80"}
+
+function applyTheme(){
+ document.documentElement.style.setProperty("--accent",settings.accent);document.title=settings.siteName;
+ document.querySelector(".brand-name").innerHTML=esc(settings.siteName).replace(/Tube$/,"<span>Tube</span>");
+ document.getElementById("heroText").textContent=settings.hero;document.getElementById("year").textContent=new Date().getFullYear();
+ document.getElementById("themeBtn").textContent=document.documentElement.classList.contains("light")?"☀":"☾"
+}
+function toggleTheme(){document.documentElement.classList.toggle("light");localStorage.setItem("amr_theme",document.documentElement.classList.contains("light")?"light":"dark");applyTheme()}
+
+function card(v){
+ let liked=state.likes.includes(v.id),later=state.later.includes(v.id);
+ return `<article class="card"><div class="thumb" onclick="watch('${v.id}')"><img src="${esc(v.thumb||thumb())}" onerror="this.src='${thumb()}'"><span class="duration">${esc(v.duration||"NEW")}</span><div class="play"><span>▶</span></div></div><div class="card-body"><div class="avatar">${esc(initials(v.channel))}</div><div style="min-width:0;flex:1"><h3>${esc(v.title)}</h3><div class="meta">${esc(v.channel)}<br>${fmt(v.views)} views · ${esc(v.age||"Just now")}</div></div><div class="card-tools"><button class="mini" onclick="toggleLikeId('${v.id}')" title="Like">${liked?"♥":"♡"}</button><button class="mini" onclick="toggleLaterId('${v.id}')" title="Watch later">${later?"✓":"▣"}</button></div></div></article>`
+}
+function renderGrid(id,list){document.getElementById(id).innerHTML=list.length?list.map(card).join(""):`<div class="empty">Nothing here yet.</div>`}
+function baseList(){
+ let list=[...videos];if(searchQuery){let q=searchQuery.toLowerCase();list=list.filter(v=>(v.title+" "+v.channel+" "+v.category+" "+v.desc).toLowerCase().includes(q))}
+ if(activeCategory!=="All"&&activeCategory!=="Trending")list=list.filter(v=>v.category===activeCategory);if(activeCategory==="Trending")list.sort((a,b)=>b.views-a.views);return list
+}
+function renderHome(){let list=baseList(),sort=document.getElementById("sort").value;if(sort==="views")list.sort((a,b)=>b.views-a.views);if(sort==="title")list.sort((a,b)=>a.title.localeCompare(b.title));if(sort==="newest")list.reverse();document.getElementById("homeTitle").textContent=searchQuery?`Results for “${searchQuery}”`:activeCategory==="All"?"Recommended":activeCategory;renderGrid("homeGrid",list)}
+function renderAll(){
+ renderHome();renderGrid("trendingGrid",[...videos].sort((a,b)=>b.views-a.views).slice(0,8));renderGrid("subsGrid",videos.filter(v=>state.subs.includes(v.channel)));renderGrid("historyGrid",state.history.map(getVideo).filter(Boolean));renderGrid("likedGrid",videos.filter(v=>state.likes.includes(v.id)));renderGrid("laterGrid",videos.filter(v=>state.later.includes(v.id)));renderQueue();
+ document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active",c.textContent===activeCategory))
+ if(document.getElementById("adminApp")&&!document.getElementById("adminApp").classList.contains("hidden"))renderAdmin()
+}
+function showPage(page){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));let el=document.getElementById("page-"+page);if(!el)return;el.classList.add("active");
+ document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));history.replaceState(null,"","#"+page);if(page!=="watch")document.getElementById("watchPlayer").pause()
+}
+function setCategory(c){activeCategory=c;searchQuery="";document.getElementById("search").value="";showPage("home");renderHome()}
+function toggleSidebar(){document.getElementById("sidebar").classList.toggle("collapsed")}
+function runSearch(){searchQuery=document.getElementById("search").value.trim();document.getElementById("suggestions").style.display="none";showPage("home");renderHome()}
+document.getElementById("search").addEventListener("input",()=>{let q=document.getElementById("search").value.trim().toLowerCase(),box=document.getElementById("suggestions");if(!q){box.style.display="none";return}let hits=videos.filter(v=>(v.title+" "+v.channel).toLowerCase().includes(q)).slice(0,5);box.innerHTML=hits.map(v=>`<div class="suggestion" onclick="document.getElementById('search').value='${esc(v.title).replace(/'/g,"&#39;")}';runSearch()">⌕ &nbsp; ${esc(v.title)}</div>`).join("")||`<div class="suggestion muted">No matches</div>`;box.style.display="block"})
+document.getElementById("search").addEventListener("keydown",e=>{if(e.key==="Enter")runSearch();if(e.key==="Escape")document.getElementById("suggestions").style.display="none"})
+document.addEventListener("click",e=>{if(!e.target.closest(".search-wrap"))document.getElementById("suggestions").style.display="none"})
+
+function watch(id){
+ let v=getVideo(id);if(!v)return;currentVideoId=id;v.views=(v.views||0)+1;state.history=[id,...state.history.filter(x=>x!==id)].slice(0,100);logEvent("video_view",v.title);save();
+ document.getElementById("watchPlayer").src=v.url;document.getElementById("watchPlayer").poster=v.thumb||"";document.getElementById("watchTitle").textContent=v.title;document.getElementById("watchMeta").textContent=`${fmt(v.views)} views · ${v.age||"Just now"} · ${v.category}`;document.getElementById("watchAvatar").textContent=initials(v.channel);document.getElementById("watchChannel").textContent=v.channel;document.getElementById("watchSubs").textContent=`${v.subs||"0"} subscribers`;document.getElementById("watchDesc").textContent=v.desc||"No description.";updateWatchActions();showPage("watch");renderAll();window.scrollTo({top:0,behavior:"smooth"})
+}
+function updateWatchActions(){document.getElementById("likeBtn").classList.toggle("active",state.likes.includes(currentVideoId));document.getElementById("likeBtn").textContent=state.likes.includes(currentVideoId)?"♥ Liked":"♡ Like";document.getElementById("laterBtn").classList.toggle("active",state.later.includes(currentVideoId));document.getElementById("laterBtn").textContent=state.later.includes(currentVideoId)?"✓ Saved":"＋ Watch later";let v=getVideo(currentVideoId);document.getElementById("subscribeBtn").textContent=state.subs.includes(v?.channel)?"Subscribed":"Subscribe"}
+function toggleLike(){toggleLikeId(currentVideoId)}
+function toggleLikeId(id){let i=state.likes.indexOf(id);if(i<0)state.likes.push(id);else state.likes.splice(i,1);logEvent("like",id);save();renderAll();updateWatchActions()}
+function toggleLater(){toggleLaterId(currentVideoId)}
+function toggleLaterId(id){let i=state.later.indexOf(id);if(i<0)state.later.unshift(id);else state.later.splice(i,1);logEvent("watch_later",id);save();renderAll();updateWatchActions()}
+function toggleSubscribe(){let v=getVideo(currentVideoId);if(!v)return;let i=state.subs.indexOf(v.channel);if(i<0)state.subs.push(v.channel);else state.subs.splice(i,1);logEvent("subscription",v.channel);save();renderAll();updateWatchActions()}
+function queueVideo(id){let q=read("amr_queue",[]);q=[id,...q.filter(x=>x!==id)].slice(0,12);localStorage.setItem("amr_queue",JSON.stringify(q));renderQueue();toast("Added to queue")}
+function renderQueue(){let q=read("amr_queue",[]).map(getVideo).filter(Boolean);document.getElementById("queueList").innerHTML=q.length?q.map(v=>`<div class="queue-item" onclick="watch('${v.id}')"><div class="queue-thumb"><img src="${esc(v.thumb)}"></div><div><h4>${esc(v.title)}</h4><small>${esc(v.channel)} · ${fmt(v.views)} views</small></div></div>`).join(""):`<div class="muted" style="padding:7px">Queue is empty.</div>`}
+function shareVideo(){let u=location.href.split("#")[0]+"#video="+currentVideoId;navigator.clipboard?.writeText(u);toast("Video link copied")}
+function clearHistory(){state.history=[];audit("clear_history");save();renderAll();toast("History cleared")}
+
+function openUpload(){document.getElementById("uploadModal").classList.add("open")}
+function closeModal(id){document.getElementById(id).classList.remove("open")}
+function backdrop(e,id){if(e.target.id===id)closeModal(id)}
+document.getElementById("uploadForm").addEventListener("submit",e=>{e.preventDefault();let file=document.getElementById("uFile").files[0],url=document.getElementById("uUrl").value.trim();if(file){if(fileUrl)URL.revokeObjectURL(fileUrl);fileUrl=URL.createObjectURL(file);url=fileUrl}if(!url){toast("Add a video URL or select a file");return}let v={id:"v_"+crypto.randomUUID(),title:document.getElementById("uTitle").value.trim(),channel:document.getElementById("uChannel").value.trim(),category:document.getElementById("uCategory").value,url,thumb:document.getElementById("uThumb").value.trim()||thumb(),desc:document.getElementById("uDesc").value.trim(),views:0,age:"Just now",duration:"NEW",subs:"0"};videos.unshift(v);logEvent("video_created",v.title);save();renderAll();closeModal("uploadModal");e.target.reset();document.getElementById("uChannel").value="Amr Creator";toast("Video added")})
+
+async function sha256(text){const data=new TextEncoder().encode(text);const buf=await crypto.subtle.digest("SHA-256",data);return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+function randSalt(){const a=new Uint8Array(16);crypto.getRandomValues(a);return btoa(String.fromCharCode(...a))}
+async function pbkdf2(password,salt){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(password),"PBKDF2",false,["deriveBits"]);const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new TextEncoder().encode(salt),iterations:120000,hash:"SHA-256"},key,256);return [...new Uint8Array(bits)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+function sessionValid(){return session.active&&(!security.sessionTimeout||session.expiresAt>Date.now())}
+function sessionTouch(){if(session.active&&security.sessionTimeout)session.expiresAt=Date.now()+20*60*1000;save()}
+function adminIsOpen(){return !document.getElementById("adminApp").classList.contains("hidden")}
+async function openAdmin(){document.getElementById("adminModal").classList.add("open");renderAdminGate()}
+async function renderAdminGate(){
+ const gate=document.getElementById("adminGate"),app=document.getElementById("adminApp");
+ if(security.configured&&sessionValid()){gate.innerHTML="";app.classList.remove("hidden");renderAdmin();startSessionTimer();return}
+ app.classList.add("hidden");
+ if(!security.configured){
+   gate.innerHTML=`<div class="login-wrap"><div class="login-card"><div class="eyebrow">First-time security setup</div><h2>Create your admin password</h2><p class="muted">Your password is transformed with PBKDF2 before it is stored. This is browser-only protection on GitHub Pages, not a server authentication system.</p><div class="field"><label>New password</label><input id="setupPass" type="password" autocomplete="new-password"></div><div class="field" style="margin-top:10px"><label>Confirm password</label><input id="setupPass2" type="password"></div><button class="btn primary" style="margin-top:12px" onclick="setupAdmin()">Create secure admin</button></div><div class="login-card"><div class="notice"><strong>Important:</strong> GitHub Pages cannot keep a secret from visitors. This security layer protects the admin UI in this browser; production-grade authentication needs a backend.</div></div></div>`;
+ }else{
+   let lock=security.lockedUntil>Date.now();gate.innerHTML=`<div class="login-wrap"><div class="login-card"><div class="eyebrow">Admin authentication</div><h2>Sign in to AmrTube</h2>${lock?`<div class="notice">Temporarily locked after failed attempts. Try again in ${Math.ceil((security.lockedUntil-Date.now())/1000)} seconds.</div>`:""}<div class="field"><label>Password</label><input id="loginPass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')loginAdmin()"></div><button class="btn primary" style="margin-top:12px" ${lock?"disabled":""} onclick="loginAdmin()">Sign in</button></div><div class="login-card"><h3>Protected controls</h3><p class="muted">The dashboard includes analytics, audit events, data backups, content management, session controls and site settings.</p></div></div>`;
+ }
+}
+async function setupAdmin(){let p=document.getElementById("setupPass").value,p2=document.getElementById("setupPass2").value;if(p.length<10){toast("Use at least 10 characters");return}if(p!==p2){toast("Passwords do not match");return}security.salt=randSalt();security.passHash=await pbkdf2(p,security.salt);security.configured=true;security.failed=0;security.lockedUntil=0;session={active:true,expiresAt:Date.now()+20*60*1000};audit("admin_setup");save();toast("Admin security enabled");renderAdminGate()}
+async function loginAdmin(){if(security.lockedUntil>Date.now()){toast("Admin login temporarily locked");return}let p=document.getElementById("loginPass").value;let hash=await pbkdf2(p,security.salt);if(hash!==security.passHash){security.failed++;if(security.lockout&&security.failed>=5){security.lockedUntil=Date.now()+5*60*1000;security.failed=0}audit("admin_login_failed");save();toast(security.lockedUntil>Date.now()?"Too many attempts — locked temporarily":"Incorrect password");renderAdminGate();return}security.failed=0;security.lockedUntil=0;session={active:true,expiresAt:Date.now()+20*60*1000};audit("admin_login_success");save();renderAdminGate()}
+function logoutAdmin(){audit("admin_logout");session={active:false,expiresAt:0};save();renderAdminGate();toast("Logged out")}
+function startSessionTimer(){clearInterval(sessionTimer);sessionTimer=setInterval(()=>{if(sessionValid()){sessionTouch()}else if(adminIsOpen()){session.active=false;save();renderAdminGate();toast("Session expired")}},30000)}
+async function changePassword(){if(!sessionValid())return;let p=prompt("Enter new admin password (10+ characters):");if(!p)return;if(p.length<10){toast("Password too short");return}security.salt=randSalt();security.passHash=await pbkdf2(p,security.salt);security.failed=0;security.lockedUntil=0;audit("password_changed");save();toast("Password changed")}
+function toggleSecurity(key){security[key]=!security[key];audit("security_setting",`${key}=${security[key]}`);save();renderAdmin();toast("Security setting updated")}
+function adminTab(tab){document.querySelectorAll(".admin-tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));document.querySelectorAll(".admin-section").forEach(s=>s.classList.remove("active"));document.getElementById("admin-"+tab).classList.add("active");renderAdmin()}
+function renderAdmin(){
+ if(!sessionValid())return;
+ let totalViews=videos.reduce((a,v)=>a+(v.views||0),0),channels=new Set(videos.map(v=>v.channel)).size;
+ document.getElementById("sVideos").textContent=videos.length;document.getElementById("sViews").textContent=fmt(totalViews);document.getElementById("sLikes").textContent=state.likes.length;document.getElementById("sChannels").textContent=channels;document.getElementById("sEvents").textContent=state.audit.length;
+ document.getElementById("setName").value=settings.siteName;document.getElementById("setAccent").value=settings.accent;document.getElementById("setHero").value=settings.hero;
+ let max=Math.max(1,...videos.map(v=>v.views));document.getElementById("overviewBars").innerHTML=videos.slice(0,8).sort((a,b)=>b.views-a.views).map(v=>`<div class="bar-row"><span>${esc(v.title.slice(0,16))}</span><div class="bar"><i style="width:${(v.views/max*100).toFixed(1)}%"></i></div><span>${fmt(v.views)}</span></div>`).join("");
+ document.getElementById("recentActivity").innerHTML=state.events.slice(-8).reverse().map(e=>`<div class="admin-row"><div><strong>${esc(e.type)}</strong><small>${new Date(e.ts).toLocaleString()} · ${esc(e.detail)}</small></div><span class="badge good">logged</span></div>`).join("")||`<div style="padding:14px" class="muted">No activity recorded yet.</div>`;
+ document.getElementById("contentTable").innerHTML=`<table class="table"><thead><tr><th>Video</th><th>Channel</th><th>Views</th><th>Category</th><th>Actions</th></tr></thead><tbody>${videos.map(v=>`<tr><td><strong>${esc(v.title)}</strong></td><td>${esc(v.channel)}</td><td>${fmt(v.views)}</td><td>${esc(v.category)}</td><td><button class="btn" onclick="editVideo('${v.id}')">Edit</button> <button class="btn danger" onclick="deleteVideo('${v.id}')">Delete</button></td></tr>`).join("")}</tbody></table>`;
+ let by={};videos.forEach(v=>by[v.category]=(by[v.category]||0)+(v.views||0));let mx=Math.max(1,...Object.values(by));document.getElementById("categoryBars").innerHTML=Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,val])=>`<div class="bar-row"><span>${esc(k)}</span><div class="bar"><i style="width:${(val/mx*100).toFixed(1)}%"></i></div><span>${fmt(val)}</span></div>`).join("");
+ let avg=videos.length?Math.round(totalViews/videos.length):0,top=[...videos].sort((a,b)=>b.views-a.views)[0],topCh=top?.channel||"—",eng=totalViews?Math.min(100,((state.likes.length+state.later.length)/Math.max(1,totalViews)*100)).toFixed(2):"0.00";document.getElementById("aAvgViews").textContent=fmt(avg);document.getElementById("aTopVideo").textContent=top?esc(top.title.slice(0,16)):"—";document.getElementById("aTopChannel").textContent=esc(topCh);document.getElementById("aEngagement").textContent=eng+"%";document.getElementById("aHistory").textContent=state.history.length;
+ renderChart();
+ document.getElementById("auditTable").innerHTML=state.audit.length?`<table class="table"><thead><tr><th>Time</th><th>Action</th><th>Detail</th></tr></thead><tbody>${state.audit.slice(-80).reverse().map(a=>`<tr><td>${new Date(a.ts).toLocaleString()}</td><td>${esc(a.action)}</td><td>${esc(a.detail)}</td></tr>`).join("")}</tbody></table>`:`<div style="padding:14px" class="muted">No audit events.</div>`;
+ document.getElementById("timeoutToggle").classList.toggle("on",!!security.sessionTimeout);document.getElementById("lockoutToggle").classList.toggle("on",!!security.lockout)
+}
+function renderChart(){
+ let days=[];for(let i=6;i>=0;i--){let d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);let start=d.getTime(),end=start+86400000;days.push({label:d.toLocaleDateString(undefined,{weekday:"short"}),count:state.events.filter(e=>e.type==="video_view"&&e.ts>=start&&e.ts<end).length})}
+ let max=Math.max(1,...days.map(d=>d.count)),w=760,h=190,p=25;let pts=days.map((d,i)=>`${p+i*((w-2*p)/(days.length-1))},${h-p-(d.count/max)*(h-2*p)}`).join(" ");document.getElementById("eventChart").innerHTML=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" points="${pts}"></polyline>${days.map((d,i)=>{let x=p+i*((w-2*p)/(days.length-1)),y=h-p-(d.count/max)*(h-2*p);return `<circle cx="${x}" cy="${y}" r="5" fill="var(--accent)"></circle><text x="${x}" y="${h-5}" font-size="11" fill="var(--muted)" text-anchor="middle">${d.label}</text>`}).join("")}</svg>`
+}
+function editVideo(id){let v=getVideo(id);if(!v)return;let t=prompt("Title",v.title),c=prompt("Channel",v.channel),cat=prompt("Category",v.category);if(t===null||c===null||cat===null)return;v.title=t.trim()||v.title;v.channel=c.trim()||v.channel;v.category=cat.trim()||v.category;audit("video_updated",v.id);save();renderAll();toast("Video updated")}
+function deleteVideo(id){let v=getVideo(id);if(!v||!confirm(`Delete “${v.title}”?`))return;videos=videos.filter(x=>x.id!==id);state.likes=state.likes.filter(x=>x!==id);state.later=state.later.filter(x=>x!==id);state.history=state.history.filter(x=>x!==id);audit("video_deleted",v.title);save();renderAll();toast("Video deleted")}
+function saveSettings(){settings.siteName=document.getElementById("setName").value.trim()||"AmrTube";settings.accent=document.getElementById("setAccent").value;settings.hero=document.getElementById("setHero").value.trim();audit("site_settings_changed");save();applyTheme();renderAll();toast("Settings saved")}
+function clearAudit(){if(!confirm("Clear the admin audit log?"))return;state.audit=[];save();renderAdmin();toast("Audit log cleared")}
+function exportBackup(){let payload={version:2,exportedAt:new Date().toISOString(),videos,settings,state,security:{configured:security.configured,sessionTimeout:security.sessionTimeout,lockout:security.lockout}};let blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="amrtube-backup.json";a.click();URL.revokeObjectURL(a.href);audit("backup_exported")}
+document.getElementById("importFile").addEventListener("change",async e=>{let f=e.target.files[0];if(!f)return;try{let obj=JSON.parse(await f.text());if(!Array.isArray(obj.videos)||!obj.settings||!obj.state)throw new Error("Invalid backup");videos=obj.videos;settings=obj.settings;state=obj.state;audit("backup_imported");save();applyTheme();renderAll();toast("Backup imported")}catch(err){toast("Invalid backup file")}e.target.value=""})
+function factoryReset(){if(!confirm("This deletes all local AmrTube data and security settings. Continue?"))return;localStorage.clear();location.reload()}
+
+document.addEventListener("keydown",e=>{if(e.key==="/"&&!/input|textarea|select/i.test(e.target.tagName)){e.preventDefault();document.getElementById("search").focus()}if(e.key==="Escape")document.querySelectorAll(".modal.open").forEach(m=>m.classList.remove("open"));if(e.key.toLowerCase()==="g"&&!/input|textarea/i.test(e.target.tagName))showPage("home");if(e.key.toLowerCase()==="t"&&!/input|textarea/i.test(e.target.tagName))showPage("trending")});
+document.addEventListener("click",()=>{if(session.active)sessionTouch()});
+window.addEventListener("beforeunload",save);
+
+(function init(){
+ if(localStorage.getItem("amr_theme")==="light")document.documentElement.classList.add("light");
+ applyTheme();renderAll();
+ if(location.hash==="#trending")showPage("trending");if(location.hash==="#subscriptions")showPage("subscriptions");if(location.hash==="#history")showPage("history");if(location.hash==="#liked")showPage("liked");if(location.hash==="#watchlater")showPage("watchlater");
+})();
+</script>
+</body>
+</html>
